@@ -1,0 +1,46 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: week2-m3-test1
+      id: week2-m3-test1
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: week2-m3-test1
+        setup-command: ''
+        command: python3 main.py
+        input: ''
+        expected-output: "(?i)RECEIPT[\\r\\n]+[\\s\\S]*아메리카노\\s*x2\\s*:\\s*9000\\s*원[\\r\\n]+[\\s\\S]*카페라떼\\s*x1\\s*:\\s*5000\\s*원[\\r\\n]+[\\s\\S]*TOTAL\\s*:\\s*14000\\s*원"
+        comparison-method: regex
+        timeout: 1
+        max-score: 20
+    - name: week2-m3-test2
+      id: week2-m3-test2
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: week2-m3-test2
+        setup-command: ''
+        command: python3 main.py
+        input: ''
+        expected-output: "(?i)RECEIPT[\\s\\S]*아메리카노[\\s\\S]*9000[\\s\\S]*카페라떼[\\s\\S]*5000[\\s\\S]*TOTAL[\\s\\S]*14000"
+        comparison-method: regex
+        timeout: 1
+        max-score: 20
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        WEEK2-M3-TEST1_RESULTS: "${{steps.week2-m3-test1.outputs.result}}"
+        WEEK2-M3-TEST2_RESULTS: "${{steps.week2-m3-test2.outputs.result}}"
+      with:
+        runners: week2-m3-test1,week2-m3-test2
